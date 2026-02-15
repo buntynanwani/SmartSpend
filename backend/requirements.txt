@@ -1,7 +1,10 @@
 # ── SmartSpend Backend Dependencies ──────────────────────────
 fastapi
 uvicorn
-mysql-connector-python
+# mysql-connector-python
+sqlalchemy
+pymysql
+
 python-dotenv
 pydantic
 email-validator

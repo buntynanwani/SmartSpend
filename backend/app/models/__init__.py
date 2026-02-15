@@ -1,2 +1,5 @@
-# Models directory kept for future use.
-# ORM models have been removed — raw SQL queries are used instead.
+from .user import User
+from .product import Product
+from .shop import Shop
+from .purchase import Purchase
+from .purchase_item import PurchaseItem
