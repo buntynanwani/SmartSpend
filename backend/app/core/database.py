@@ -1,30 +1,41 @@
 """
-Database connection utility using mysql-connector-python.
+Database configuration using SQLAlchemy ORM.
 """
 
 import os
 from dotenv import load_dotenv
-import mysql.connector
-from mysql.connector import Error
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", ""),
-    "database": os.getenv("DB_NAME", "smartspend"),
-    "port": int(os.getenv("DB_PORT", 3306)),
-}
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "3306")
+DB_NAME = os.getenv("DB_NAME", "smartspend")
+
+DATABASE_URL = (
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
+
+engine = create_engine(DATABASE_URL, echo=True)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+Base = declarative_base()
 
 
-def get_connection():
+def get_db():
     """
-    Create and return a new MySQL connection.
-    Caller is responsible for closing the connection.
+    FastAPI dependency for database session.
     """
+    db = SessionLocal()
     try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        return conn
-    except Error as e:
-        raise RuntimeError(f"Database connection failed: {e}")
+        yield db
+    finally:
+        db.close()
