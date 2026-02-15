@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import date
+import datetime
 
 from app.core.database import get_db
 from app.models.purchase import Purchase
@@ -21,7 +21,7 @@ def create_purchase(purchase: PurchaseCreate, db: Session = Depends(get_db)):
     db_purchase = Purchase(
         user_id=purchase.user_id,
         shop_id=purchase.shop_id,
-        date=purchase.date or date.today()
+        date=purchase.date or datetime.date.today()
     )
     db.add(db_purchase)
     db.flush()

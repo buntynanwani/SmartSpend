@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from datetime import date
+import datetime
 from typing import List, Optional
 
 # --- Items ---
@@ -22,14 +22,14 @@ class PurchaseItemResponse(BaseModel):
 class PurchaseCreate(BaseModel):
     user_id: int
     shop_id: int
-    date: Optional[date] = None
+    date: Optional[datetime.date] = None
     items: List[PurchaseItemCreate]
 
 class PurchaseResponse(BaseModel):
     id: int
     user_id: int
     shop_id: int
-    date: date
+    date: datetime.date
     total_amount: float
     items: List[PurchaseItemResponse]
 

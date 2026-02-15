@@ -2,7 +2,9 @@
 SmartSpend API — Main application entry point.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
@@ -22,6 +24,29 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+
+# ── Detailed 422 error logging ───────────────────────────────
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Log the exact Pydantic validation errors to the console."""
+    print(f"\n{'='*60}")
+    print(f"422 VALIDATION ERROR on {request.method} {request.url}")
+    print(f"{'='*60}")
+    for err in exc.errors():
+        print(f"  Field : {' -> '.join(str(loc) for loc in err['loc'])}")
+        print(f"  Type  : {err['type']}")
+        print(f"  Msg   : {err['msg']}")
+        print(f"  Input : {err.get('input', 'N/A')}")
+        print(f"  ---")
+    # Also log the raw body that was received
+    body = exc.body
+    print(f"  Raw body: {body}")
+    print(f"{'='*60}\n")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": str(body)},
+    )
 
 
 # CORS middleware
