@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import date, datetime
 
 from app.core.database import get_db
 from app.models.purchase import Purchase
@@ -34,7 +34,7 @@ def create_purchase(purchase: PurchaseCreate, db: Session = Depends(get_db)):
     db_purchase = Purchase(
         user_id=purchase.user_id,
         shop_id=purchase.shop_id,
-        date=datetime.utcnow()
+        date=purchase.date or date.today()
     )
     
     db.add(db_purchase)
@@ -68,3 +68,16 @@ def create_purchase(purchase: PurchaseCreate, db: Session = Depends(get_db)):
     db.refresh(db_purchase)
 
     return db_purchase
+
+
+@router.delete("/{purchase_id}", status_code=204)
+def delete_purchase(purchase_id: int, db: Session = Depends(get_db)):
+    """Delete a purchase and its items by ID."""
+    purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not purchase:
+        raise HTTPException(status_code=404, detail="Purchase not found")
+
+    db.query(PurchaseItem).filter(PurchaseItem.purchase_id == purchase_id).delete()
+    db.delete(purchase)
+    db.commit()
+    return None

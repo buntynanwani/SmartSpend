@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from datetime import datetime
-from typing import List
+from datetime import date, datetime
+from typing import List, Optional
 
 # -------- Purchase Items --------
 
@@ -24,14 +24,15 @@ class PurchaseItemResponse(BaseModel):
 class PurchaseCreate(BaseModel):
     user_id: int
     shop_id: int
+    date: Optional[date] = None  # Manual purchase date (YYYY-MM-DD)
     items: List[PurchaseItemCreate]
 
 class PurchaseResponse(BaseModel):
     id: int
     user_id: int
     shop_id: int
-    date: datetime      # Use 'date' to match your Purchase model
-    total_amount: float # Added this so you can see the receipt total
+    date: date           # Use 'date' to match your Purchase model (Date column)
+    total_amount: float  # Added this so you can see the receipt total
     items: List[PurchaseItemResponse]
 
     class Config:

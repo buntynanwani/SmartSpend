@@ -182,3 +182,246 @@ tbody tr:hover {
   font-weight: 600;
   color: var(--primary-dark);
 }
+
+/* ── Nested fields (new user / new shop inline inputs) ────── */
+
+.nested-fields {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.nested-fields input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.nested-fields input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+}
+
+/* ── Form row (two/three column) ─────────────────────────── */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.form-row-three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* ── Item card (multi-product) ───────────────────────────── */
+
+.item-card {
+  background: #f8f9ff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.item-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.item-card-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.item-subtotal {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--primary-dark);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--primary);
+  border: 2px dashed var(--primary);
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(108, 99, 255, 0.06);
+}
+
+.btn-remove {
+  background: none;
+  color: #dc3545;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.btn-remove:hover {
+  background-color: #f8d7da;
+}
+
+/* ── Total preview ───────────────────────────────────────── */
+
+.total-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.total-preview strong {
+  font-size: 1.15rem;
+}
+
+/* ── Items cell in table ─────────────────────────────────── */
+
+.items-cell .item-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px dotted var(--border);
+}
+
+.items-cell .item-row:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  font-weight: 500;
+}
+
+.item-detail {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* ── Action buttons (edit / delete) ──────────────────────── */
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 0.25rem;
+  transition: background-color 0.15s;
+}
+
+.btn-edit {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.btn-edit:hover {
+  background: #d2e3fc;
+}
+
+.btn-delete {
+  background: #fce8e6;
+  color: #d93025;
+}
+
+.btn-delete:hover {
+  background: #f8d7da;
+}
+
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Grand total row ─────────────────────────────────────── */
+
+.grand-total-row {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.grand-total-row td {
+  padding: 0.75rem;
+  color: #fff;
+  font-weight: 700;
+  border-bottom: none;
+}
+
+.grand-total-label {
+  text-align: right;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.grand-total-amount {
+  color: #fff !important;
+  font-size: 1.05rem;
+}
+
+/* ── Cancel button ───────────────────────────────────────── */
+
+.btn-cancel {
+  background-color: transparent;
+  color: var(--text-light);
+  border: 1px solid var(--border);
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.btn-cancel:hover {
+  background-color: #f0f0f0;
+}
+
+/* ── Form actions row ────────────────────────────────────── */
+
+.form-actions {
+  margin-top: 0.5rem;
+}
+
+/* ── Unit badge (next to quantity label) ─────────────────── */
+
+.unit-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  text-transform: lowercase;
+  font-weight: 400;
+  vertical-align: middle;
+}

@@ -11,33 +11,44 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ── Transactions ────────────────────────────────────────────
+// ── Purchases ───────────────────────────────────────────────
 
-export const createTransaction = (data) =>
-  api.post("/transactions/", data).then((res) => res.data);
+export const createPurchase = (data) =>
+  api.post("/purchases/", data).then((res) => res.data);
 
-export const getTransactions = (skip = 0, limit = 100) =>
+export const getPurchases = (skip = 0, limit = 100) =>
   api
-    .get("/transactions/", { params: { skip, limit } })
+    .get("/purchases/", { params: { skip, limit } })
     .then((res) => res.data);
 
-export const deleteTransaction = (id) =>
-  api.delete(`/transactions/${id}`);
+export const deletePurchase = (id) =>
+  api.delete(`/purchases/${id}`);
+
+export const updatePurchase = (id, data) =>
+  api.put(`/purchases/${id}`, data).then((res) => res.data);
 
 // ── Users ───────────────────────────────────────────────────
 
 export const createUser = (data) =>
-  api.post("/transactions/users", data).then((res) => res.data);
+  api.post("/users/", data).then((res) => res.data);
 
 export const getUsers = () =>
-  api.get("/transactions/users").then((res) => res.data);
+  api.get("/users/").then((res) => res.data);
 
 // ── Products ────────────────────────────────────────────────
 
 export const createProduct = (data) =>
-  api.post("/transactions/products", data).then((res) => res.data);
+  api.post("/products/", data).then((res) => res.data);
 
 export const getProducts = () =>
-  api.get("/transactions/products").then((res) => res.data);
+  api.get("/products/").then((res) => res.data);
+
+// ── Shops ───────────────────────────────────────────────────
+
+export const createShop = (data) =>
+  api.post("/shops/", data).then((res) => res.data);
+
+export const getShops = () =>
+  api.get("/shops/").then((res) => res.data);
 
 export default api;
