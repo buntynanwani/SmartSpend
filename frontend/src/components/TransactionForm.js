@@ -88,8 +88,9 @@ function TransactionForm({ onSuccess, editData, onCancelEdit }) {
     setUseNewShop(false);
     setSelectedShopId(String(editData.shop_id));
 
+    // Use the date string directly — avoids new Date() timezone shifts
     const isoDate = editData.date
-      ? new Date(editData.date).toISOString().split("T")[0]
+      ? String(editData.date).split("T")[0]
       : new Date().toISOString().split("T")[0];
     setDate(isoDate);
 
@@ -197,23 +198,57 @@ function TransactionForm({ onSuccess, editData, onCancelEdit }) {
 
       if (!userId || !shopId) throw new Error("Missing user or shop.");
 
+      // Build payload matching PurchaseCreate exactly:
+      //   { user_id: int, shop_id: int, date?: "YYYY-MM-DD" | null, items: [...] }
+      const cleanDate = date && date.trim() !== "" ? date : null;
+
       const payload = {
         user_id: Number(userId),
         shop_id: Number(shopId),
-        date,
-        items: resolvedItems,
+        date: cleanDate,
+        items: resolvedItems.map((it) => ({
+          product_id: Number(it.product_id),
+          quantity: Number(it.quantity),
+          price: Number(it.price),
+        })),
       };
 
+      // Guard against NaN — Pydantic rejects null / NaN for required fields
+      if (isNaN(payload.user_id) || isNaN(payload.shop_id)) {
+        throw new Error("Invalid user or shop ID (not a number).");
+      }
+      for (const it of payload.items) {
+        if (isNaN(it.product_id) || isNaN(it.quantity) || isNaN(it.price)) {
+          throw new Error(
+            "Invalid item data — product_id, quantity, and price must be numbers."
+          );
+        }
+      }
+
+      console.log(
+        editData ? `PUT /purchases/${editData.id}` : "POST /purchases/",
+        "\nPayload:",
+        JSON.stringify(payload, null, 2)
+      );
+
       if (editData) {
-        await updatePurchase(editData.id, payload);
+        await updatePurchase(Number(editData.id), payload);
       } else {
         await createPurchase(payload);
       }
 
       setMessage({ type: "success", text: "Purchase saved successfully!" });
       resetForm();
+      if (editData && onCancelEdit) onCancelEdit(); // exit edit mode
       if (onSuccess) onSuccess();
     } catch (err) {
+      // Log full 422 response for debugging
+      if (err.response) {
+        console.error("API error response:", {
+          status: err.response.status,
+          data: err.response.data,
+        });
+      }
       const detail =
         err.response?.data?.detail || err.message || "Error saving purchase";
       setMessage({

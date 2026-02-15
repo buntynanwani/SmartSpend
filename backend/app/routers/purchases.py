@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import date, datetime
+from datetime import date
 
 from app.core.database import get_db
 from app.models.purchase import Purchase
@@ -14,69 +14,72 @@ router = APIRouter()
 
 @router.get("/", response_model=list[PurchaseResponse])
 def get_purchases(db: Session = Depends(get_db)):
-    """Retrieve all purchases from the database."""
     return db.query(Purchase).all()
 
 @router.post("/", response_model=PurchaseResponse)
 def create_purchase(purchase: PurchaseCreate, db: Session = Depends(get_db)):
-    """Create a new purchase with multiple items (Atomic Transaction)."""
-    
-    # 1. Validation
-    user = db.query(User).filter(User.id == purchase.user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    shop = db.query(Shop).filter(Shop.id == purchase.shop_id).first()
-    if not shop:
-        raise HTTPException(status_code=404, detail="Shop not found")
-
-    # 2. Create the Purchase Header
     db_purchase = Purchase(
         user_id=purchase.user_id,
         shop_id=purchase.shop_id,
         date=purchase.date or date.today()
     )
-    
     db.add(db_purchase)
-    db.flush() # Secure the ID for child items
+    db.flush()
 
-    # 3. Create the Purchase Items & Calculate Totals
-    total_receipt_amount = 0
+    total = 0
     for item in purchase.items:
-        product = db.query(Product).filter(Product.id == item.product_id).first()
-        if not product:
-            db.rollback()
-            raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
-
-        calc_subtotal = item.quantity * item.price
-        total_receipt_amount += calc_subtotal
-
-        db_item = PurchaseItem(
+        sub = float(item.quantity) * float(item.price)
+        total += sub
+        db.add(PurchaseItem(
             purchase_id=db_purchase.id,
             product_id=item.product_id,
             quantity=item.quantity,
             unit_price=item.price,
-            subtotal=calc_subtotal
-        )
-        db.add(db_item)
-
-    # 4. Update total amount in the header
-    db_purchase.total_amount = total_receipt_amount
-
-    # 5. Final Commit
+            subtotal=sub
+        ))
+    
+    db_purchase.total_amount = total
     db.commit()
     db.refresh(db_purchase)
-
     return db_purchase
 
+@router.put("/{purchase_id}", response_model=PurchaseResponse)
+def update_purchase(purchase_id: int, purchase: PurchaseCreate, db: Session = Depends(get_db)):
+    db_purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not db_purchase:
+        raise HTTPException(status_code=404, detail="Purchase not found")
+
+    db_purchase.user_id = purchase.user_id
+    db_purchase.shop_id = purchase.shop_id
+    if purchase.date:
+        db_purchase.date = purchase.date
+
+    # Clean old items
+    db.query(PurchaseItem).filter(PurchaseItem.purchase_id == purchase_id).delete()
+    
+    total = 0
+    for item in purchase.items:
+        sub = float(item.quantity) * float(item.price)
+        total += sub
+        db.add(PurchaseItem(
+            purchase_id=db_purchase.id,
+            product_id=item.product_id,
+            quantity=item.quantity,
+            unit_price=item.price,
+            subtotal=sub
+        ))
+
+    db_purchase.total_amount = total
+    db.commit()
+    db.refresh(db_purchase)
+    return db_purchase
 
 @router.delete("/{purchase_id}", status_code=204)
 def delete_purchase(purchase_id: int, db: Session = Depends(get_db)):
-    """Delete a purchase and its items by ID."""
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
     if not purchase:
         raise HTTPException(status_code=404, detail="Purchase not found")
-
+    
     db.query(PurchaseItem).filter(PurchaseItem.purchase_id == purchase_id).delete()
     db.delete(purchase)
     db.commit()
