@@ -7,6 +7,11 @@ class UserCreate(BaseModel):
     email: EmailStr
 
 
+class UserUpdate(BaseModel):
+    name: str | None = None
+    email: EmailStr | None = None
+
+
 class UserResponse(BaseModel):
     id: int
     name: str

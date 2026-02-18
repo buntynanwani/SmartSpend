@@ -9,6 +9,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
+    reference = Column(String(50), unique=True, nullable=True)
     name = Column(String(200), nullable=False)
     category = Column(String(100))
     unit_type = Column(

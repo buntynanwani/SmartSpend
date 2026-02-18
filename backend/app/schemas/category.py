@@ -2,15 +2,15 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class ShopCreate(BaseModel):
+class CategoryCreate(BaseModel):
     name: str
 
 
-class ShopUpdate(BaseModel):
+class CategoryUpdate(BaseModel):
     name: str | None = None
 
 
-class ShopResponse(BaseModel):
+class CategoryResponse(BaseModel):
     id: int
     name: str
     created_at: datetime
