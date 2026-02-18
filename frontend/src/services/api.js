@@ -11,33 +11,47 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ── Transactions ────────────────────────────────────────────
-
-export const createTransaction = (data) =>
-  api.post("/transactions/", data).then((res) => res.data);
-
-export const getTransactions = (skip = 0, limit = 100) =>
-  api
-    .get("/transactions/", { params: { skip, limit } })
-    .then((res) => res.data);
-
-export const deleteTransaction = (id) =>
-  api.delete(`/transactions/${id}`);
-
-// ── Users ───────────────────────────────────────────────────
+// ── Users ─────────────────────────────────────
 
 export const createUser = (data) =>
-  api.post("/transactions/users", data).then((res) => res.data);
+  api.post("/users/", data).then((res) => res.data);
 
 export const getUsers = () =>
-  api.get("/transactions/users").then((res) => res.data);
+  api.get("/users/").then((res) => res.data);
 
-// ── Products ────────────────────────────────────────────────
+// ── Products ──────────────────────────────────
 
 export const createProduct = (data) =>
-  api.post("/transactions/products", data).then((res) => res.data);
+  api.post("/products/", data).then((res) => res.data);
 
 export const getProducts = () =>
-  api.get("/transactions/products").then((res) => res.data);
+  api.get("/products/").then((res) => res.data);
+
+// ── Categories ────────────────────────────────
+
+export const createCategory = (data) =>
+  api.post("/categories/", data).then((res) => res.data);
+
+export const getCategories = () =>
+  api.get("/categories/").then((res) => res.data);
+
+// ── Shops ─────────────────────────────────────
+
+export const createShop = (data) =>
+  api.post("/shops/", data).then((res) => res.data);
+
+export const getShops = () =>
+  api.get("/shops/").then((res) => res.data);
+
+// ── Purchases ─────────────────────────────────
+
+export const createPurchase = (data) =>
+  api.post("/purchases/", data).then((res) => res.data);
+
+export const getPurchases = () =>
+  api.get("/purchases/").then((res) => res.data);
+
+export const deletePurchase = (id) =>
+  api.delete(`/purchases/${id}`).then((res) => res.data);
 
 export default api;

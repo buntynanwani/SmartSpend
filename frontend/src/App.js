@@ -23,7 +23,10 @@ function App() {
             </section>
             <section className="card list-section">
               <h2>Recent Transactions</h2>
-              <TransactionList refreshKey={refreshKey} />
+              <TransactionList
+                refreshKey={refreshKey}
+                onRefresh={handleTransactionAdded}
+              />
             </section>
           </div>
         </div>

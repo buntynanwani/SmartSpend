@@ -24,6 +24,7 @@ class PurchaseItemResponse(BaseModel):
 class PurchaseCreate(BaseModel):
     user_id: int
     shop_id: int
+    date: str | None = None
     items: List[PurchaseItemCreate]
 
 class PurchaseResponse(BaseModel):
