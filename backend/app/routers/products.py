@@ -18,7 +18,8 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     db_product = Product(
         name=product.name,
         reference=product.reference,
-        category=product.category,
+        category_id=product.category_id,
+        brand_id=product.brand_id,
         unit_type=product.unit_type,
     )
     db.add(db_product)
