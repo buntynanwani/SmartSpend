@@ -12,7 +12,7 @@ const eurFmt = new Intl.NumberFormat("de-DE", {
   currency: "EUR",
 });
 
-function TransactionList({ refreshKey, onRefresh }) {
+function TransactionList({ refreshKey, onRefresh, setEditingTransaction }) {
   const [purchases, setPurchases] = useState([]);
   const [userMap, setUserMap] = useState({});
   const [productMap, setProductMap] = useState({});
@@ -91,6 +91,15 @@ function TransactionList({ refreshKey, onRefresh }) {
                 <span className="amount purchase-total">
                   {eurFmt.format(purchase.total_amount || 0)}
                 </span>
+                {setEditingTransaction && (
+                  <button
+                    className="btn btn-edit"
+                    onClick={() => setEditingTransaction(purchase)}
+                    title="Edit purchase"
+                  >
+                    ✏️ Edit
+                  </button>
+                )}
                 <button
                   className="btn btn-danger"
                   onClick={() => handleDelete(purchase.id)}

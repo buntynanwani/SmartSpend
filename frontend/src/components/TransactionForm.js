@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
 import {
   createPurchase,
+  updatePurchase,
   createUser,
   createProduct,
   createShop,
@@ -47,7 +48,7 @@ const selectStyles = {
   }),
 };
 
-function TransactionForm({ onSuccess }) {
+function TransactionForm({ onSuccess, editingTransaction, setEditingTransaction }) {
   // ── Header-level state ──────────────────────────────────
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
@@ -78,6 +79,55 @@ function TransactionForm({ onSuccess }) {
     getShops().then(setShops).catch(() => {});
     getCategories().then(setCategories).catch(() => {});
   }, []);
+
+  // ── Populate form when editing a transaction ────────────
+  useEffect(() => {
+    if (!editingTransaction) return;
+
+    const tx = editingTransaction;
+
+    // Set user (always existing)
+    setUseNewUser(false);
+    setSelectedUserId(String(tx.user_id));
+    setUserName("");
+    setUserEmail("");
+
+    // Set shop (always existing)
+    setUseNewShop(false);
+    setSelectedShopId(String(tx.shop_id));
+    setShopName("");
+
+    // Set date
+    const txDate = tx.date ? new Date(tx.date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
+    setDate(txDate);
+
+    // Set items — map from purchase response items to form items
+    if (tx.items && tx.items.length > 0) {
+      setItems(
+        tx.items.map((item) => {
+          // Try to find matching product option
+          const matchedProduct = products.find((p) => p.id === item.product_id);
+          const option = matchedProduct
+            ? {
+                value: matchedProduct.id,
+                label: matchedProduct.reference
+                  ? `${matchedProduct.name} [${matchedProduct.reference}]`
+                  : matchedProduct.name,
+                product: matchedProduct,
+              }
+            : { value: item.product_id, label: `Product #${item.product_id}` };
+
+          return {
+            ...EMPTY_ITEM,
+            selectedProduct: option,
+            isNewProduct: false,
+            quantity: String(item.quantity),
+            unitPrice: String(item.unit_price),
+          };
+        })
+      );
+    }
+  }, [editingTransaction, products]);
 
   // ── Build react-select options from products ────────────
   const productOptions = useMemo(
@@ -220,15 +270,24 @@ function TransactionForm({ onSuccess }) {
         });
       }
 
-      // ── Create Purchase ─────────────────────────────
-      await createPurchase({
-        user_id: parseInt(userId, 10),
-        shop_id: parseInt(shopId, 10),
-        date: date,
-        items: resolvedItems,
-      });
-
-      setMessage({ type: "success", text: "Transaction added successfully!" });
+      // ── Create or Update Purchase ───────────────────────
+      if (editingTransaction) {
+        await updatePurchase(editingTransaction.id, {
+          user_id: parseInt(userId, 10),
+          shop_id: parseInt(shopId, 10),
+          date: date,
+          items: resolvedItems,
+        });
+        setMessage({ type: "success", text: "Transaction updated successfully!" });
+      } else {
+        await createPurchase({
+          user_id: parseInt(userId, 10),
+          shop_id: parseInt(shopId, 10),
+          date: date,
+          items: resolvedItems,
+        });
+        setMessage({ type: "success", text: "Transaction added successfully!" });
+      }
 
       // Reset form
       setUserName("");
@@ -240,6 +299,9 @@ function TransactionForm({ onSuccess }) {
       setUseNewShop(true);
       setDate(new Date().toISOString().split("T")[0]);
       setItems([{ ...EMPTY_ITEM }]);
+      if (editingTransaction && setEditingTransaction) {
+        setEditingTransaction(null);
+      }
       onSuccess();
     } catch (err) {
       const detail =
@@ -552,8 +614,41 @@ function TransactionForm({ onSuccess }) {
       </div>
 
       <button className="btn btn-primary" type="submit" disabled={loading}>
-        {loading ? "Saving..." : "Add Transaction"}
+        {loading
+          ? "Saving..."
+          : editingTransaction
+          ? "Update Transaction"
+          : "Add Transaction"}
       </button>
+
+      {editingTransaction && (
+        <button
+          type="button"
+          className="btn"
+          style={{
+            marginTop: "0.5rem",
+            width: "100%",
+            background: "#6c757d",
+            color: "#fff",
+            borderRadius: "8px",
+          }}
+          onClick={() => {
+            setEditingTransaction(null);
+            setUserName("");
+            setUserEmail("");
+            setShopName("");
+            setSelectedUserId("");
+            setSelectedShopId("");
+            setUseNewUser(true);
+            setUseNewShop(true);
+            setDate(new Date().toISOString().split("T")[0]);
+            setItems([{ ...EMPTY_ITEM }]);
+            setMessage(null);
+          }}
+        >
+          Cancel Edit
+        </button>
+      )}
     </form>
   );
 }

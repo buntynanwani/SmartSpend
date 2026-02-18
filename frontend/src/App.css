@@ -6,26 +6,33 @@
   flex-direction: column;
 }
 
-.main-content {
-  flex: 1;
-  padding: 2rem 1rem;
-}
+/* ── Side-by-Side Layout (mobile-first) ───────────────────── */
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
+.app-layout {
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  align-items: start;
+  padding: 2rem 1rem;
+  flex: 1;
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
+.app-layout__form,
+.app-layout__dashboard {
+  min-width: 0;          /* prevent flex children from overflowing */
+}
+
+@media (min-width: 1024px) {
+  .app-layout {
+    flex-direction: row;
+    height: calc(100vh - 80px); /* subtract header height */
+    overflow: hidden;
+  }
+
+  .app-layout__form,
+  .app-layout__dashboard {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 2rem;
   }
 }
 

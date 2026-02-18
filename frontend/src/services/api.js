@@ -19,6 +19,12 @@ export const createUser = (data) =>
 export const getUsers = () =>
   api.get("/users/").then((res) => res.data);
 
+export const updateUser = (id, data) =>
+  api.put(`/users/${id}`, data).then((res) => res.data);
+
+export const deleteUser = (id) =>
+  api.delete(`/users/${id}`).then((res) => res.data);
+
 // ── Products ──────────────────────────────────
 
 export const createProduct = (data) =>
@@ -26,6 +32,12 @@ export const createProduct = (data) =>
 
 export const getProducts = () =>
   api.get("/products/").then((res) => res.data);
+
+export const updateProduct = (id, data) =>
+  api.put(`/products/${id}`, data).then((res) => res.data);
+
+export const deleteProduct = (id) =>
+  api.delete(`/products/${id}`).then((res) => res.data);
 
 // ── Categories ────────────────────────────────
 
@@ -35,6 +47,12 @@ export const createCategory = (data) =>
 export const getCategories = () =>
   api.get("/categories/").then((res) => res.data);
 
+export const updateCategory = (id, data) =>
+  api.put(`/categories/${id}`, data).then((res) => res.data);
+
+export const deleteCategory = (id) =>
+  api.delete(`/categories/${id}`).then((res) => res.data);
+
 // ── Shops ─────────────────────────────────────
 
 export const createShop = (data) =>
@@ -42,6 +60,12 @@ export const createShop = (data) =>
 
 export const getShops = () =>
   api.get("/shops/").then((res) => res.data);
+
+export const updateShop = (id, data) =>
+  api.put(`/shops/${id}`, data).then((res) => res.data);
+
+export const deleteShop = (id) =>
+  api.delete(`/shops/${id}`).then((res) => res.data);
 
 // ── Purchases ─────────────────────────────────
 
@@ -53,5 +77,8 @@ export const getPurchases = () =>
 
 export const deletePurchase = (id) =>
   api.delete(`/purchases/${id}`).then((res) => res.data);
+
+export const updatePurchase = (id, data) =>
+  api.put(`/purchases/${id}`, data).then((res) => res.data);
 
 export default api;

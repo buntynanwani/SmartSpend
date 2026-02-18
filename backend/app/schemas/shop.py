@@ -6,6 +6,10 @@ class ShopCreate(BaseModel):
     name: str
 
 
+class ShopUpdate(BaseModel):
+    name: str | None = None
+
+
 class ShopResponse(BaseModel):
     id: int
     name: str

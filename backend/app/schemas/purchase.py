@@ -27,6 +27,12 @@ class PurchaseCreate(BaseModel):
     date: str | None = None
     items: List[PurchaseItemCreate]
 
+class PurchaseUpdate(BaseModel):
+    user_id: int | None = None
+    shop_id: int | None = None
+    date: str | None = None
+    items: List[PurchaseItemCreate] | None = None
+
 class PurchaseResponse(BaseModel):
     id: int
     user_id: int
