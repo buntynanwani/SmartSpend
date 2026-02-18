@@ -35,3 +35,6 @@ build/
 
 # PowerBI temp
 powerbi/*.tmp
+
+# Ignore raw data imports
+backend/scripts/data_import/raw/*.csv
