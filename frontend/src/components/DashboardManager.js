@@ -407,7 +407,7 @@ function ProductsManagePanel({ onBack }) {
   const [form, setForm] = useState({
     name: "",
     reference: "",
-    category: "",
+    category_id: null,
     unit_type: "unit",
   });
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -433,7 +433,7 @@ function ProductsManagePanel({ onBack }) {
   const categoryOptions = useMemo(
     () =>
       categories.map((c) => ({
-        value: c.name,
+        value: c.id,
         label: c.name,
       })),
     [categories]
@@ -451,7 +451,7 @@ function ProductsManagePanel({ onBack }) {
   }, [products, searchQuery]);
 
   const resetForm = () => {
-    setForm({ name: "", reference: "", category: "", unit_type: "unit" });
+    setForm({ name: "", reference: "", category_id: null, unit_type: "unit" });
     setSelectedCategory(null);
     setShowAdd(false);
     setEditId(null);
@@ -461,18 +461,18 @@ function ProductsManagePanel({ onBack }) {
     if (!form.name.trim()) return;
     try {
       // If the user typed a new category, create it first
-      let categoryName = form.category;
+      let categoryId = form.category_id;
       if (
         selectedCategory &&
         selectedCategory.__isNew__ &&
         selectedCategory.label.trim()
       ) {
         const newCat = await createCategory({ name: selectedCategory.label.trim() });
-        categoryName = newCat.name;
+        categoryId = newCat.id;
         loadCategories(); // refresh the list
       }
 
-      const payload = { ...form, category: categoryName };
+      const payload = { ...form, category_id: categoryId, brand_id: null };
 
       if (editId) {
         await updateProduct(editId, payload);
@@ -491,11 +491,12 @@ function ProductsManagePanel({ onBack }) {
     setForm({
       name: p.name,
       reference: p.reference || "",
-      category: p.category || "",
+      category_id: p.category_id || null,
       unit_type: p.unit_type || "unit",
     });
+    const matchedCat = categories.find((c) => c.id === p.category_id);
     setSelectedCategory(
-      p.category ? { value: p.category, label: p.category } : null
+      matchedCat ? { value: matchedCat.id, label: matchedCat.name } : null
     );
     setShowAdd(true);
   };
@@ -555,7 +556,7 @@ function ProductsManagePanel({ onBack }) {
                 setSelectedCategory(option);
                 setForm({
                   ...form,
-                  category: option ? option.value : "",
+                  category_id: option && !option.__isNew__ ? option.value : null,
                 });
               }}
             />
@@ -563,7 +564,7 @@ function ProductsManagePanel({ onBack }) {
               value={form.unit_type}
               onChange={(e) => setForm({ ...form, unit_type: e.target.value })}
             >
-              {["unit", "kg", "g", "liter", "ml"].map((u) => (
+              {["unit", "kg", "g", "liter", "ml", "bill", "session", "minute", "hour"].map((u) => (
                 <option key={u} value={u}>
                   {u}
                 </option>
@@ -605,7 +606,10 @@ function ProductsManagePanel({ onBack }) {
                     <td>{p.id}</td>
                     <td>{p.reference || "—"}</td>
                     <td>{p.name}</td>
-                    <td>{p.category || "—"}</td>
+                    <td>
+                      {(categories.find((c) => c.id === p.category_id) || {})
+                        .name || "—"}
+                    </td>
                     <td>{p.unit_type}</td>
                     <td className="actions-cell">
                       <button
@@ -772,8 +776,8 @@ function BrandsManagePanel({ onBack }) {
         <div className="panel-empty">
           <p>🚧 Brands management is coming soon.</p>
           <p style={{ fontSize: "0.82rem", marginTop: "0.5rem" }}>
-            A <strong>brand</strong> field will be added to the Product model in
-            a future update.
+            Products now support a <strong>brand_id</strong> foreign key.
+            Full CRUD for brands will be available in a future update.
           </p>
         </div>
       </div>

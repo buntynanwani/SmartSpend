@@ -13,7 +13,7 @@ import {
   getCategories,
 } from "../services/api";
 
-const UNIT_TYPES = ["unit", "kg", "g", "liter", "ml"];
+const UNIT_TYPES = ["unit", "kg", "g", "liter", "ml", "bill", "session", "minute", "hour"];
 
 const eurFmt = new Intl.NumberFormat("de-DE", {
   style: "currency",
@@ -230,7 +230,7 @@ function TransactionForm({ onSuccess, editingTransaction, setEditingTransaction 
         const key = rawName.toLowerCase();
         if (!categoryCache[key]) {
           const cat = await createCategory({ name: rawName });
-          categoryCache[key] = cat.name;
+          categoryCache[key] = cat.id;
           setCategories((prev) =>
             prev.some((c) => c.id === cat.id) ? prev : [...prev, cat]
           );
@@ -246,13 +246,23 @@ function TransactionForm({ onSuccess, editingTransaction, setEditingTransaction 
           const rawName = item.useNewCategory
             ? item.newCategoryName.trim()
             : item.selectedCategoryName || "";
-          const categoryName = rawName
-            ? categoryCache[rawName.toLowerCase()] || rawName
-            : null;
+          let categoryId = null;
+          if (rawName) {
+            const key = rawName.toLowerCase();
+            if (categoryCache[key]) {
+              categoryId = categoryCache[key];
+            } else {
+              const found = categories.find(
+                (c) => c.name.toLowerCase() === key
+              );
+              categoryId = found ? found.id : null;
+            }
+          }
 
           const product = await createProduct({
             name: item.newProductLabel,
-            category: categoryName,
+            category_id: categoryId,
+            brand_id: null,
             unit_type: item.productUnitType || null,
           });
           productId = product.id;
