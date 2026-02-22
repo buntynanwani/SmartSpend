@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # Virtual environment
 venv/
@@ -34,3 +35,6 @@ build/
 
 # PowerBI temp
 powerbi/*.tmp
+
+# Ignore raw data imports
+backend/scripts/data_import/raw/*.csv
